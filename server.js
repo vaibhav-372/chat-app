@@ -41,15 +41,15 @@ const generateOTP = () => {
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: "bloggy372@gmail.com",
-    pass: "azby ctkh jlnv fcrt",
+    user: "mail",
+    pass: "password",
   },
 });
 
 // Function to send OTP
 const sendOTP = async (email, otp) => {
   const mailOptions = {
-    from: "bloggy372@gmail.com",
+    from: "mail",
     to: email,
     subject: "Your OTP Code",
     text: `Your OTP code is ${otp}`,
