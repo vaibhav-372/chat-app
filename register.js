@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
@@ -15,6 +15,7 @@ const Register = () => {
     name: "",
     password: "",
     confirmPassword: "",
+    flag:0,
   };
 
   const otpInitialValues = {
