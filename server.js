@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const nodemailer = require("nodemailer");
+// const { number } = require("yup");
 
 const app = express();
 app.use(cors());
@@ -73,7 +74,7 @@ app.post("/send-otp", async (req, res) => {
     const existMail = await Register.findOne({ email });
 
     if (existMail) {
-      if (flag === 1) {
+      if (existMail.flag == 1) {
         console.log("Sending response: Email already exists");
         return res.status(400).json({ message: "Email already exists", statusCode });
       } else {
@@ -93,7 +94,7 @@ app.post("/send-otp", async (req, res) => {
         name,
         password,
         otp: generatedotp,
-        flag,
+        flag:0,
       });
       await sendOTP(email, generatedotp);
       await registerEntry.save();
@@ -115,6 +116,7 @@ app.post("/send-otp", async (req, res) => {
 app.post("/verify-otp", async (req, res) => {
   const { email, otp, statusCode } = req.body;
 
+  console.log(`email: ${email} , otp: ${otp}`)
   console.log("Received status code from frontend:", statusCode);
 
   try {
