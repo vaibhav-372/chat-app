@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import axios from "axios";
 import * as Yup from "yup";
+import { useNavigate } from "react-router-dom";
 import RegisterForm from "./RegisterForm";
 import OtpVerificationForm from "./OtpVerificationForm";
-import Toast from "./Toast";
+import Toast from "../Toast";
+// import Home from "../home-component/home";
 
 const Register = () => {
   const [otpSent, setOtpSent] = useState(false);
@@ -12,6 +14,8 @@ const Register = () => {
   const [showToast, setShowToast] = useState(false);
   const [toastType, setToastType] = useState("");
   const [email, setEmail] = useState(""); // New state variable to store email
+
+  const navigate = useNavigate();
 
   const initialValues = {
     email: "",
@@ -79,13 +83,14 @@ const Register = () => {
         "http://localhost:5000/verify-otp",
         dataToSend
       );
-      
+
       if (response && response.data) {
         handleResponse(response.data);
         setToastType("success");
         if (response.data.statusCode === 200) {
           setOtpVerified(true);
           resetForm();
+          navigate("/home") // Redirect to home page
         }
       } else {
         throw new Error("Invalid response from server");

@@ -4,6 +4,7 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 
 const Register = () => {
+
   const [otpSent, setOtpSent] = useState(false);
   const [otpVerified, setOtpVerified] = useState(false);
   const [message, setMessage] = useState("");
@@ -15,11 +16,11 @@ const Register = () => {
     name: "",
     password: "",
     confirmPassword: "",
-    flag:0,
+    flag: 0,
   };
 
   const otpInitialValues = {
-    email:"",
+    email: initialValues.email,
     otp: "",
   };
 
@@ -36,17 +37,16 @@ const Register = () => {
   });
 
   const otpValidationSchema = Yup.object({
-    email: Yup.string()
-    .email("Invalid email format")
-    .required("Email is required")
-    .matches(/@gmail\.com$/, "Email must be a Gmail address"), // Adding email validation
     otp: Yup.string().required("OTP is required"),
   });
 
   const sendOtp = async (values, { setSubmitting }) => {
     try {
       const dataToSend = { ...values, statusCode: 200 };
-      const response = await axios.post("http://localhost:5000/send-otp", dataToSend);
+      const response = await axios.post(
+        "http://localhost:5000/send-otp",
+        dataToSend
+      );
       const { data, status } = response;
       if (status === 200 && data.statusCode === 200) {
         handleResponse(data);
@@ -56,7 +56,9 @@ const Register = () => {
         throw new Error(data.message || "Failed to send OTP");
       }
     } catch (error) {
-      setMessage(`Error sending OTP: ${error.response?.data?.message || error.message}`);
+      setMessage(
+        `Error sending OTP: ${error.response?.data?.message || error.message}`
+      );
       setToastType("error");
       setShowToast(true);
     } finally {
@@ -64,22 +66,27 @@ const Register = () => {
     }
   };
 
-  const verifyOtp = async (values, { setSubmitting }) => {
+  const verifyOtp = async (values, { setSubmitting , resetForm }) => {
     try {
-      const otpToSend = { email: values.email, otp: values.otp, statusCode: 200 };
-      const response = await axios.post("http://localhost:5000/verify-otp", otpToSend);
+      const otpToSend = { ...values, statusCode: 200 };
+      const response = await axios.post(
+        "http://localhost:5000/verify-otp",
+        otpToSend
+      );
       if (response && response.data) {
         handleResponse(response.data);
         setToastType("success");
         if (response.data.statusCode === 200) {
           setOtpVerified(true);
-          // resetForm(); // Reset the OTP form fields
+          resetForm(); // Reset the OTP form fields
         }
       } else {
         throw new Error("Invalid response from server");
       }
     } catch (error) {
-      setMessage(`Error verifying OTP: ${error.response?.data?.message || error.message}`);
+      setMessage(
+        `Error verifying OTP: ${error.response?.data?.message || error.message}`
+      );
       setToastType("error");
       setShowToast(true);
     } finally {
@@ -144,7 +151,7 @@ const Register = () => {
           validationSchema={validationSchema}
           onSubmit={sendOtp}
         >
-          {({ isSubmitting }) => (
+          {({ handleChange, handleBlur, values, isSubmitting }) => (
             <>
               <h2 className="text-2xl font-bold mb-4">Register</h2>
               <Form className="mb-3 w-full max-w-sm">
@@ -152,6 +159,8 @@ const Register = () => {
                   <Field
                     type="email"
                     name="email"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
                     className="form-input w-full px-4 py-2 mb-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="Enter your email"
                   />
@@ -165,6 +174,8 @@ const Register = () => {
                   <Field
                     type="text"
                     name="name"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
                     className="form-input w-full px-4 py-2 mb-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="Enter your name"
                   />
@@ -178,6 +189,8 @@ const Register = () => {
                   <Field
                     type="password"
                     name="password"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
                     className="form-input w-full px-4 py-2 mb-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="Enter password"
                   />
@@ -191,6 +204,8 @@ const Register = () => {
                   <Field
                     type="password"
                     name="confirmPassword"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
                     className="form-input w-full px-4 py-2 mb-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="Confirm password"
                   />
@@ -204,6 +219,8 @@ const Register = () => {
                   <button
                     type="submit"
                     className="w-full py-2 px-4 bg-blue-500 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
                     disabled={isSubmitting}
                   >
                     Send OTP
@@ -219,14 +236,16 @@ const Register = () => {
           validationSchema={otpValidationSchema}
           onSubmit={verifyOtp}
         >
-          {({ isSubmitting }) => (
+          {({ isSubmitting, handleChange, handleBlur, values, resetForm }) => (
             <>
               <h2 className="text-2xl font-bold mb-4">Verify OTP</h2>
               <Form className="mb-3 w-full max-w-sm">
                 <div className="mb-4">
                   <Field
-                    type="text"
+                    type="number"
                     name="otp"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
                     className="form-input w-full px-4 py-2 mb-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="Enter OTP"
                   />

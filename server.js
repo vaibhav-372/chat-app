@@ -141,6 +141,26 @@ app.post("/verify-otp", async (req, res) => {
   }
 });
 
+// Login endpoint
+app.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await Register.findOne({ email, password });
+
+    if (user) {
+      res.status(200).json({ message: "Login successful" });
+    } else {
+      res.status(400).json({ message: "Invalid email or password" });
+    }
+  } catch (error) {
+    console.error("Error during login:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+
+
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
